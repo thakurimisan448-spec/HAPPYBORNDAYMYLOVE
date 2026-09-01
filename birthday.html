@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>For My Nirisha 🌌</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Alex+Brush&family=Mrs+Saint+Delafield&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --marble-white:#fdf7f9;
+    --marble-cream:#fbeef2;
+    --pink-soft:#f3c6d6;
+    --pink-mid:#e39cb8;
+    --pink-deep:#c96a92;
+    --plum:#7a3a56;
+    --space-deep:#100811;
+    --space-mid:#1e0f22;
+    --nebula-pink:#e58bb0;
+    --nebula-purple:#8a5c9e;
+    --glow-white:#fff9fb;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  html,body{
+    width:100%; height:100%;
+    overflow:hidden;
+    background:#08040a;
+    font-family:'Cormorant Garamond', serif;
+  }
+
+  #app{
+    position:fixed; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    background:#08040a;
+  }
+
+  /* ===== 16:9 letterboxed stage ===== */
+  #stage{
+    position:relative;
+    width:100vw; height:56.25vw; /* 16:9 */
+    max-height:100vh; max-width:177.78vh; /* 16:9 */
+    background:var(--marble-white);
+    overflow:hidden;
+    box-shadow:0 0 80px rgba(0,0,0,0.6);
+  }
+
+  .screen{
+    position:absolute; inset:0;
+    opacity:0; pointer-events:none;
+    transition:opacity 1s ease;
+  }
+  .screen.active{
+    opacity:1; pointer-events:auto;
+  }
+
+  /* ===== marble texture backgrounds ===== */
+  .marble-bg{
+    position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse at 15% 20%, rgba(233,161,193,0.35) 0%, transparent 45%),
+      radial-gradient(ellipse at 85% 15%, rgba(122,58,86,0.18) 0%, transparent 40%),
+      radial-gradient(ellipse at 70% 80%, rgba(233,161,193,0.3) 0%, transparent 50%),
+      radial-gradient(ellipse at 25% 85%, rgba(122,58,86,0.15) 0%, transparent 45%),
+      linear-gradient(135deg, var(--marble-white) 0%, var(--marble-cream) 45%, var(--marble-white) 100%);
+  }
+  .marble-bg::before{
+    content:'';
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(128deg, transparent 40%, rgba(201,106,146,0.25) 41%, rgba(201,106,146,0.08) 42%, transparent 44%),
+      linear-gradient(65deg, transparent 60%, rgba(201,106,146,0.18) 61%, transparent 63%),
+      linear-gradient(20deg, transparent 25%, rgba(201,106,146,0.12) 26%, transparent 28%),
+      linear-gradient(150deg, transparent 70%, rgba(122,58,86,0.15) 71%, transparent 73%);
+    mix-blend-mode:multiply;
+  }
+
+  .marble-bg.pink-tint{
+    background:
+      radial-gradient(ellipse at 15% 20%, rgba(233,161,193,0.55) 0%, transparent 48%),
+      radial-gradient(ellipse at 85% 15%, rgba(201,106,146,0.32) 0%, transparent 45%),
+      radial-gradient(ellipse at 70% 80%, rgba(233,161,193,0.5) 0%, transparent 55%),
+      radial-gradient(ellipse at 25% 85%, rgba(122,58,86,0.22) 0%, transparent 48%),
+      linear-gradient(135deg, var(--pink-soft) 0%, var(--marble-cream) 45%, var(--pink-soft) 100%);
+  }
+
+  .nebula-bg{
+    position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse at 20% 30%, rgba(229,139,176,0.30) 0%, transparent 40%),
+      radial-gradient(ellipse at 80% 20%, rgba(138,92,158,0.28) 0%, transparent 45%),
+      radial-gradient(ellipse at 60% 80%, rgba(229,139,176,0.22) 0%, transparent 50%),
+      radial-gradient(ellipse at 10% 90%, rgba(138,92,158,0.18) 0%, transparent 40%),
+      linear-gradient(160deg, var(--space-deep) 0%, var(--space-mid) 55%, var(--space-deep) 100%);
+  }
+  .nebula-bg-pink{
+    position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse at 20% 25%, rgba(255,255,255,0.5) 0%, transparent 42%),
+      radial-gradient(ellipse at 80% 20%, rgba(233,156,184,0.55) 0%, transparent 48%),
+      radial-gradient(ellipse at 65% 82%, rgba(243,198,214,0.55) 0%, transparent 55%),
+      radial-gradient(ellipse at 12% 88%, rgba(122,58,86,0.35) 0%, transparent 48%),
+      linear-gradient(160deg, #3a1526 0%, #5c2440 45%, #401a30 100%);
+  }
+  .stars{
+    position:absolute; inset:0;
+    background-image:
+      radial-gradient(1px 1px at 10% 20%, #fff 100%, transparent),
+      radial-gradient(1px 1px at 30% 60%, #fff 100%, transparent),
+      radial-gradient(1.5px 1.5px at 50% 15%, #fff 100%, transparent),
+      radial-gradient(1px 1px at 70% 45%, #fff 100%, transparent),
+      radial-gradient(1px 1px at 85% 75%, #fff 100%, transparent),
+      radial-gradient(1.5px 1.5px at 15% 85%, #fff 100%, transparent),
+      radial-gradient(1px 1px at 45% 90%, #fff 100%, transparent),
+      radial-gradient(1px 1px at 92% 30%, #fff 100%, transparent),
+      radial-gradient(1px 1px at 60% 65%, #fff 100%, transparent),
+      radial-gradient(1px 1px at 25% 40%, #fff 100%, transparent);
+    background-repeat:repeat;
+    opacity:0.7;
+    animation:twinkle 4s ease-in-out infinite alternate;
+  }
+  @keyframes twinkle{ from{opacity:0.4;} to{opacity:0.85;} }
+
+  /* ===== glow brush script text ===== */
+  .glow-text{
+    font-family:'Alex Brush', 'Mrs Saint Delafield', cursive;
+    color:var(--glow-white);
+    text-shadow:
+      0 0 8px rgba(255,255,255,0.9),
+      0 0 18px rgba(255,255,255,0.7),
+      0 0 34px rgba(229,139,176,0.8),
+      0 0 60px rgba(229,139,176,0.5);
+    letter-spacing:0.5px;
+  }
+
+  /* ===== falling hearts ===== */
+  .hearts-layer{
+    position:absolute; inset:0;
+    pointer-events:none;
+    overflow:hidden;
+    z-index:45;
+  }
+  .heart-p{
+    position:absolute;
+    top:-8%;
+    font-size:2.1vw;
+    opacity:1;
+    pointer-events:none;
+    animation-name:fallHeart;
+    animation-timing-function:linear;
+    animation-iteration-count:infinite;
+    animation-play-state:running !important;
+    filter:drop-shadow(0 0 6px rgba(255,255,255,0.85)) drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+  }
+  @keyframes fallHeart{
+    0%{ top:-10%; transform:translateX(0) rotate(0deg); opacity:0; }
+    10%{ opacity:0.9; }
+    90%{ opacity:0.8; }
+    100%{ top:115%; transform:translateX(var(--drift,20px)) rotate(25deg); opacity:0; }
+  }
+
+  /* ============ PASSWORD SCREEN ============ */
+  #screen-lock{ display:flex; align-items:center; justify-content:center; }
+  .lock-card{
+    position:relative; z-index:5;
+    text-align:center;
+    padding:3.5vw 4vw;
+    border-radius:1.2vw;
+    background:rgba(255,255,255,0.55);
+    backdrop-filter:blur(6px);
+    box-shadow:0 1vw 3vw rgba(122,58,86,0.18), inset 0 0 0 1px rgba(255,255,255,0.6);
+  }
+  .lock-title{
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    font-weight:600;
+    font-size:2vw;
+    color:var(--plum);
+    letter-spacing:1px;
+    margin-bottom:1.6vw;
+  }
+  .lock-sub{
+    font-family:'Alex Brush', cursive;
+    font-size:2.6vw;
+    color:var(--pink-deep);
+    margin-bottom:1.6vw;
+  }
+  #password-input{
+    font-family:'Cormorant Garamond', serif;
+    font-size:1.3vw;
+    text-align:center;
+    letter-spacing:3px;
+    width:16vw;
+    padding:0.9vw 1vw;
+    border-radius:2vw;
+    border:1.5px solid var(--pink-mid);
+    background:rgba(255,255,255,0.85);
+    color:var(--plum);
+    outline:none;
+  }
+  #password-input:focus{
+    border-color:var(--pink-deep);
+    box-shadow:0 0 0 4px rgba(233,156,184,0.25);
+  }
+  #unlock-btn{
+    display:block;
+    margin:1.4vw auto 0;
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    font-size:1.1vw;
+    padding:0.7vw 2.2vw;
+    border-radius:2vw;
+    border:none;
+    cursor:pointer;
+    background:linear-gradient(135deg, var(--pink-mid), var(--pink-deep));
+    color:#fff;
+    letter-spacing:1px;
+    box-shadow:0 0.4vw 1vw rgba(201,106,146,0.4);
+    transition:transform 0.2s ease;
+  }
+  #unlock-btn:hover{ transform:translateY(-2px) scale(1.03); }
+  .lock-msg{
+    margin-top:0.9vw;
+    font-size:1vw;
+    color:var(--plum);
+    min-height:1.4vw;
+    font-style:italic;
+  }
+  .shake{ animation:shakeX 0.45s; }
+  @keyframes shakeX{
+    0%,100%{ transform:translateX(0); }
+    20%{ transform:translateX(-10px); }
+    40%{ transform:translateX(10px); }
+    60%{ transform:translateX(-6px); }
+    80%{ transform:translateX(6px); }
+  }
+
+  /* ============ HUB (galaxy map) ============ */
+  #hub-title{
+    position:absolute; top:4%; left:50%; transform:translateX(-50%);
+    font-family:'Alex Brush', cursive;
+    font-size:2.6vw;
+    color:var(--glow-white);
+    text-shadow:0 0 10px rgba(255,255,255,0.8), 0 0 24px rgba(229,139,176,0.7);
+    text-align:center;
+    z-index:10;
+  }
+  #hub-hint{
+    position:absolute; top:11.5%; left:50%; transform:translateX(-50%);
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:0.95vw;
+    color:rgba(255,255,255,0.65);
+    z-index:10;
+    text-align:center;
+    width:80%;
+  }
+  #orbit-field{
+    position:absolute; inset:0;
+    z-index:5;
+  }
+  .orbit-ring{
+    position:absolute; top:50%; left:50%;
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+    pointer-events:none;
+  }
+  .orbit-spin{
+    position:absolute; top:50%; left:50%;
+    width:0; height:0;
+    pointer-events:none;
+  }
+  .galaxy-node{
+    position:absolute;
+    width:15vw; height:15vw;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    pointer-events:auto;
+    transform:translate(-50%,-50%);
+  }
+  .galaxy-icon-wrap{
+    width:100%; height:100%;
+    position:relative;
+    animation:pulseGlow 4s ease-in-out infinite;
+    transition:transform 0.25s ease, filter 0.3s ease;
+  }
+  .galaxy-node:hover .galaxy-icon-wrap.unlocked{ transform:scale(1.14); }
+  .galaxy-icon-wrap svg{
+    width:100%; height:100%;
+    filter:drop-shadow(0 0 1.2vw rgba(255,255,255,0.75)) drop-shadow(0 0 2.4vw rgba(255,220,235,0.4));
+  }
+  .galaxy-icon-wrap.locked svg{
+    filter:grayscale(1) brightness(0.55) drop-shadow(0 0 0.3vw rgba(255,255,255,0.15));
+  }
+  .galaxy-icon-wrap.locked{ animation:none; cursor:not-allowed; }
+  .lock-icon{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    font-size:1.6vw;
+    opacity:0;
+    transition:opacity 0.2s ease;
+    text-shadow:0 0 6px rgba(0,0,0,0.8);
+  }
+  .galaxy-icon-wrap.locked .lock-icon{ opacity:0.9; }
+  @keyframes pulseGlow{
+    0%,100%{ filter:brightness(1); }
+    50%{ filter:brightness(1.35); }
+  }
+  .galaxy-label{
+    position:absolute; top:104%; left:50%; transform:translateX(-50%);
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    font-size:0.85vw;
+    color:#fff;
+    text-shadow:0 0 6px rgba(0,0,0,0.6);
+    white-space:nowrap;
+    text-align:center;
+  }
+  .galaxy-icon-wrap.locked ~ .galaxy-label{ opacity:0.5; }
+
+  #center-heart{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:7vw; height:7vw;
+    border-radius:50%;
+    z-index:8;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(circle, #fff 0%, var(--pink-soft) 55%, var(--nebula-pink) 100%);
+    box-shadow:0 0 3vw rgba(255,255,255,0.55), 0 0 6vw rgba(229,139,176,0.5);
+    animation:heartBeat 2.4s ease-in-out infinite;
+    font-size:2.3vw;
+    color:var(--plum);
+  }
+  @keyframes heartBeat{
+    0%,100%{ transform:translate(-50%,-50%) scale(1); }
+    50%{ transform:translate(-50%,-50%) scale(1.08); }
+  }
+  #center-heart-label{
+    position:absolute; top:calc(50% + 4.4vw); left:50%; transform:translateX(-50%);
+    font-family:'Alex Brush', cursive;
+    font-size:1.1vw;
+    color:#fff;
+    text-shadow:0 0 8px rgba(255,255,255,0.7);
+    z-index:8;
+    text-align:center;
+    white-space:nowrap;
+  }
+
+  /* ============ GALAXY DETAIL PAGE ============ */
+  .media-field{
+    position:absolute; inset:0;
+    z-index:3;
+  }
+  .tile{
+    position:absolute;
+    border-radius:0.6vw;
+    overflow:hidden;
+    box-shadow:0 0 1.6vw rgba(255,255,255,0.28), 0 0.3vw 1vw rgba(0,0,0,0.45);
+    background:linear-gradient(135deg, rgba(243,198,214,0.5), rgba(255,255,255,0.5));
+  }
+  .tile img, .tile video{
+    width:100%; height:100%;
+    object-fit:contain;
+    display:block;
+  }
+  .page-text-wrap{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:78%;
+    max-height:82%;
+    text-align:center;
+    z-index:25;
+    pointer-events:none;
+  }
+  .type-caret{
+    display:inline-block;
+    width:0.08em;
+    background:var(--plum);
+    height:0.9em;
+    margin-left:2px;
+    vertical-align:-0.08em;
+    animation:caretBlink 0.8s steps(1) infinite;
+  }
+  @keyframes caretBlink{ 50%{ opacity:0; } }
+  .page-text-wrap .glow-text{
+    font-family:'Pacifico', 'Alex Brush', cursive;
+    font-size:1.5vw;
+    line-height:1.85;
+    letter-spacing:0.3px;
+    word-spacing:2px;
+    display:block;
+    color:var(--plum);
+    text-shadow:
+      0 0 5px rgba(255,255,255,0.95),
+      0 0 12px rgba(255,255,255,0.85),
+      0 0 22px rgba(233,156,184,0.9),
+      0 0 40px rgba(201,106,146,0.55);
+  }
+  .back-btn{
+    position:absolute; top:4%; left:3%;
+    z-index:30;
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    font-size:1vw;
+    padding:0.6vw 1.4vw;
+    border-radius:2vw;
+    border:1.5px solid var(--pink-mid);
+    background:rgba(255,255,255,0.6);
+    color:var(--plum);
+    cursor:pointer;
+    backdrop-filter:blur(4px);
+    transition:background 0.2s ease;
+  }
+  .back-btn:hover{ background:rgba(255,255,255,0.85); }
+  .galaxy-page-title{
+    position:absolute; top:4%; left:50%; transform:translateX(-50%);
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    font-size:1.1vw;
+    color:var(--plum);
+    z-index:30;
+    text-align:center;
+  }
+
+  /* ============ FULL-SCREEN 1:1 PHOTO/VIDEO COLLAGE (galaxy pages + final page) ============ */
+  .page-collage{
+    position:absolute; inset:0;
+    display:grid;
+    gap:2px;
+    z-index:1;
+  }
+  .page-collage .collage-cell{
+    width:100%; height:100%;
+    background-size:cover;
+    background-position:center;
+    object-fit:cover;
+    display:block;
+    filter:brightness(0.92) saturate(1.05);
+    animation:collageBreathe 9s ease-in-out infinite;
+  }
+  .page-collage-tint{
+    position:absolute; inset:0;
+    z-index:2;
+    background:linear-gradient(160deg, rgba(255,255,255,0.4) 0%, rgba(255,246,249,0.22) 50%, rgba(255,255,255,0.4) 100%);
+  }
+
+  /* ============ FINAL PAGE ============ */
+  #screen-final .collage-grid{
+    position:absolute; inset:0;
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    grid-template-rows:repeat(3, 1fr);
+    gap:2px;
+    z-index:1;
+  }
+  #screen-final .collage-grid .collage-cell{
+    width:100%; height:100%;
+    background-size:cover;
+    background-position:center;
+    object-fit:cover;
+    filter:brightness(0.92) saturate(1.05);
+    animation:collageBreathe 8s ease-in-out infinite;
+    display:block;
+  }
+  @keyframes collageBreathe{
+    0%,100%{ transform:scale(1); }
+    50%{ transform:scale(1.05); }
+  }
+  #screen-final .dim-overlay{
+    position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(16,8,17,0.18) 0%, rgba(16,8,17,0.32) 55%, rgba(16,8,17,0.5) 100%);
+    z-index:2;
+  }
+  #final-text{
+    position:absolute; top:38%; left:50%; transform:translate(-50%,-50%);
+    width:70%;
+    text-align:center;
+    z-index:10;
+    font-size:2.6vw;
+    line-height:1.4;
+    text-shadow:
+      0 0 6px rgba(255,255,255,0.9),
+      0 0 16px rgba(255,255,255,0.7),
+      0 2px 10px rgba(16,8,17,0.85),
+      0 0 34px rgba(16,8,17,0.6);
+  }
+  #gift-box{
+    position:absolute; bottom:7%; right:5%;
+    z-index:15;
+    text-align:center;
+    cursor:pointer;
+  }
+  #gift-label{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:0.85vw;
+    color:#fff;
+    margin-bottom:0.5vw;
+    text-shadow:0 0 6px rgba(0,0,0,0.6);
+    white-space:nowrap;
+  }
+  #gift-icon{
+    font-size:3.6vw;
+    animation:giftWiggle 2.2s ease-in-out infinite;
+    filter:drop-shadow(0 0 1vw rgba(255,255,255,0.5));
+  }
+  @keyframes giftWiggle{
+    0%,100%{ transform:rotate(-6deg); }
+    50%{ transform:rotate(6deg); }
+  }
+
+  /* gift reveal modal */
+  #gift-modal{
+    position:absolute; inset:0;
+    z-index:60;
+    display:none;
+    align-items:center; justify-content:center;
+    background:rgba(12,6,9,0.75);
+  }
+  #gift-modal.show{ display:flex; }
+  #gift-modal .modal-card{
+    text-align:center;
+    padding:1.6vw;
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.4);
+    border-radius:1vw;
+    backdrop-filter:blur(6px);
+  }
+  #gift-modal img{
+    width:22vw; height:22vw;
+    object-fit:cover;
+    border-radius:0.6vw;
+    box-shadow:0 0 3vw rgba(255,255,255,0.5);
+  }
+  #gift-modal .modal-close{
+    display:block;
+    margin:1vw auto 0;
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    color:#fff;
+    background:none;
+    border:1px solid rgba(255,255,255,0.6);
+    border-radius:2vw;
+    padding:0.5vw 1.6vw;
+    cursor:pointer;
+    font-size:0.9vw;
+  }
+  #congrats-text{
+    font-family:'Pacifico', cursive;
+    font-size:1.8vw;
+    color:#fff;
+    text-shadow:0 0 8px rgba(255,255,255,0.9), 0 0 20px rgba(233,156,184,0.9);
+    margin-bottom:1vw;
+    animation:congratsPop 0.6s ease;
+  }
+  @keyframes congratsPop{
+    0%{ transform:scale(0.5); opacity:0; }
+    60%{ transform:scale(1.15); opacity:1; }
+    100%{ transform:scale(1); opacity:1; }
+  }
+  .confetti-layer{
+    position:absolute; inset:0;
+    z-index:65;
+    pointer-events:none;
+    overflow:hidden;
+  }
+  .confetti-piece{
+    position:absolute;
+    top:50%; left:50%;
+    font-size:1.6vw;
+    opacity:0;
+    animation-name:confettiBurst;
+    animation-timing-function:cubic-bezier(.15,.7,.3,1);
+    animation-fill-mode:forwards;
+  }
+  @keyframes confettiBurst{
+    0%{ transform:translate(-50%,-50%) translate(0,0) scale(0.4) rotate(0deg); opacity:1; }
+    70%{ opacity:1; }
+    100%{ transform:translate(-50%,-50%) translate(var(--tx), var(--ty)) scale(1) rotate(var(--rot)); opacity:0; }
+  }
+
+  /* mobile scaling floor */
+  @media (max-width:700px){
+    .lock-title{ font-size:3.6vw; }
+    .lock-sub{ font-size:5vw; }
+    #password-input{ font-size:2.6vw; width:38vw; padding:2vw; }
+    #unlock-btn{ font-size:2.4vw; padding:1.6vw 4.5vw; }
+    .lock-msg{ font-size:2.2vw; }
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div id="stage">
+
+    <!-- ============ PASSWORD SCREEN ============ -->
+    <div class="screen active" id="screen-lock">
+      <div class="marble-bg"></div>
+      <div class="lock-card">
+        <div class="lock-title">ENTER THE PASSWORD TO ENTER</div>
+        <div class="lock-sub">for my Nirisha</div>
+        <input type="password" id="password-input" placeholder="• • • • • • •" autocomplete="off">
+        <button id="unlock-btn">Enter</button>
+        <div class="lock-msg" id="lock-msg"></div>
+      </div>
+      <div class="hearts-layer" id="lock-hearts"></div>
+    </div>
+
+    <!-- ============ HUB SCREEN ============ -->
+    <div class="screen" id="screen-hub">
+      <div class="nebula-bg"></div>
+      <div class="stars"></div>
+      <div id="hub-title">our little universe</div>
+      <div id="hub-hint">open each galaxy in order — the next one lights up once you've visited the last</div>
+      <div id="orbit-field"></div>
+      <div id="center-heart">💗</div>
+      <div id="center-heart-label">our forever</div>
+      <div class="hearts-layer" id="hub-hearts"></div>
+    </div>
+
+    <!-- ============ GALAXY PAGE (template rendered dynamically) ============ -->
+    <div class="screen galaxy-page" id="screen-galaxy">
+      <div class="marble-bg pink-tint"></div>
+      <button class="back-btn" id="galaxy-back">← back to galaxy</button>
+      <div class="galaxy-page-title" id="galaxy-page-title"></div>
+      <div class="media-field" id="galaxy-media"></div>
+      <div class="page-text-wrap"><span class="glow-text" id="galaxy-text"></span></div>
+      <div class="hearts-layer" id="galaxy-hearts"></div>
+    </div>
+
+    <!-- ============ FINAL PAGE ============ ============ -->
+    <div class="screen" id="screen-final">
+      <div class="collage-grid" id="collage-grid"></div>
+      <div class="dim-overlay"></div>
+      <button class="back-btn" id="final-back">← back to galaxy</button>
+      <div id="final-text" class="glow-text">LETS BUILD US AND LETS GROW OLD TOGETHER</div>
+      <div id="gift-box">
+        <div id="gift-label">IF AGREE THEN ACCEPT THE GIFT</div>
+        <div id="gift-icon">🎁</div>
+      </div>
+      <div class="hearts-layer" id="final-hearts"></div>
+
+      <div id="gift-modal">
+        <div class="confetti-layer" id="confetti-layer"></div>
+        <div class="modal-card">
+          <div id="congrats-text">CONGRATULATIONS 🎉</div>
+          <img src="nirisha/folder9/photo1.jpg" alt="gift">
+          <button class="modal-close" id="gift-close">close</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<audio id="bg-song" src="song.mp3" loop preload="auto"></audio>
+
+<script>
+/* ============================================================
+   DATA — edit paths/counts here if your folders differ.
+   Each galaxy is modeled after a real galaxy type/name.
+   ============================================================ */
+const GALAXIES = [
+  {
+    id:1, name:"Milky Way", type:"barredSpiral",
+    text:"HAPPIEST BORNDAY TO YOU MY LIITLE GIRL. STAY HAPPY AND ALWAYS BE JUST LIKE YOUR CHILDHOOD WITH THE SAME INNOCENCE CARRYING THE SAME ATTITUDE AND BEHAVIOUR",
+    photos:8, videos:0, folder:"folder1",
+    core:"#fff4d6", arm:"#a8c8ff", accent:"#ff9ecb"
+  },
+  {
+    id:2, name:"Andromeda", type:"spiral",
+    text:"HAPPIEST BORNDAY TO YOU MY LOVELY LOVE WHERE MY WIFE IS GROWING AND MOVING TOWARDS THE TEENAGE PHASE WHERE MY LOVE HAS SURPASSING IT BY LEARNING ANS STAYING STRONG",
+    photos:8, videos:0, folder:"folder2",
+    core:"#fff0e0", arm:"#c9b8ff", accent:"#ff9ecb"
+  },
+  {
+    id:3, name:"Triangulum", type:"spiral",
+    text:"IN THIS PLANET WHERE WE ARE BORN WHERE WE ARE LIVING AND LOVING EACH OTHER IS VERY BIG BUT I FEEL SO MUCH LUCKY TO FOUND YOU AND TO BE WITH YOU IN THIS BIG WORLD WHERE WE ARE HAVING OUR OWN SMALL WORLD",
+    photos:5, videos:3, folder:"folder3",
+    core:"#fef6e4", arm:"#9fd8ff", accent:"#c9fff0"
+  },
+  {
+    id:4, name:"Whirlpool Galaxy", type:"grandDesign",
+    text:"IN THIS BIG WORLD WHERE MANY PROBLEMS WILL COME MANY UNPREDICTED THINGS WILL HAPPEN BUT NEVER WORRIED ABOUT IT YOU WILL ALWAYS HAVE YOUR BOY WITH YOU AND STAND INFRONT OF YOU AT ANYTIME AT ANY PLACE AT ANY TIME AT ANY PROBLEM YOU WILL ALWAYS SEE ME INFRONT OF YOU WHERE WHATEVER COMES YOU WILL ALWAYS SEE ME INFRONT OF YOU",
+    photos:3, videos:5, folder:"folder4",
+    core:"#fff2cc", arm:"#a0e8ff", accent:"#ffb3a0"
+  },
+  {
+    id:5, name:"Sombrero Galaxy", type:"lenticularEdge",
+    text:"YOU ARE TURNING 19 NOW WHERE YOU ARE ENTERING TO YOUR ADULT AGE WHERE THE LIFE WILL SHOW YOU WHAT THE REAL LIFE IS NEVER WORRY ABOUT ANYTHING MAIN POINT IS TO BE HAPPY AND NEVER WORRY ABOUT PROBLEM THE LIFE WILL SHOW AND GIVE BECAUSE YOU HAVE YOUR LOVE INFRONT OF YOU SO MAIN POINT IS YOU SHOULD BE HAPPY AND ALWAYS SMILING OTHER THING IS MANAGED AND HANDLE BY YOUR LOVE",
+    photos:4, videos:4, folder:"folder5",
+    core:"#ffe9c2", arm:"#5c4632", accent:"#f0d9a6"
+  },
+  {
+    id:6, name:"Cartwheel Galaxy", type:"ring",
+    text:"THE LIFE IS UNPREDICTABLE AND NEVER GO WITH WHAT WE IMAGINE BUT ONE THING ALWAYS REMAIN THE SAME THE LOVE AND YOUR BOY WHERE I WILL PROTECT YOU JUST LIKE THE RING OF THE SATURN WHERE YOU JUST SMILE AND ALWAYS BE HAPPY ALL THE THINGS AND THE PROBLEM IT SHOW I WILL STAY AND STAND INFRONT OF YOU AND HANDLE IT",
+    photos:1, videos:7, folder:"folder6",
+    core:"#fff2e8", arm:"#8a5c9e", accent:"#a6c9f2"
+  },
+  {
+    id:7, name:"Pinwheel Galaxy", type:"spiral",
+    text:"AFTER COMPLETING THE TEENAGE AND ADULT AGES BY LOVING LIVING ENJOYING AND STAYING WITH EACH OTHER TILL THIS AGES WE WILL BE MOVING TO OUR CHILL AND 40'S ERA WHICH IS GONNA BE CHILL WHERE WE WILL SEE OUR HAPPINESS IN OURS HAPPINESS",
+    photos:4, videos:4, folder:"folder7",
+    core:"#fff8e1", arm:"#a6f2e0", accent:"#ffd9a0"
+  },
+  {
+    id:8, name:"Large Magellanic Cloud", type:"irregular",
+    text:"AFTER CROSSING OUR ALL AGES AND ERA WE ARE MOVING TO OUR OLD AGES WHERE THE ONLY THING CHANGE IS OUR BODY AND THE PHYSICAL ENERGY NOT OUR LOVE NOT OUR BEHAVIOUR WE WILL ALWAYS BE YOUNG TOGETHER AND ALWAYS BE THE SAME WHERE I WILL ALWAYS IRRITATE AND RAGE MY MOMMY WHERE YOU WILL BE ANGRY AND I WILL MAKE YOU MORE ANGRY",
+    photos:8, videos:0, folder:"folder8",
+    core:"#fff2f7", arm:"#a6b3f2", accent:"#ff9ecb"
+  }
+];
+const PASSWORD = "mommy17";
+
+/* ============================================================
+   REAL-GALAXY SVG GENERATOR
+   ============================================================ */
+function polar(cx,cy,r,theta){ return [cx+r*Math.cos(theta), cy+r*Math.sin(theta)]; }
+
+function spiralDots(cx,cy,coreR,maxR,arms,turns,color,perArm,scatterAmt){
+  let out='';
+  for(let a=0;a<arms;a++){
+    const offset = (2*Math.PI/arms)*a;
+    for(let i=0;i<perArm;i++){
+      const t = i/perArm;
+      const theta = offset + t*turns*2*Math.PI;
+      const r = coreR + t*(maxR-coreR);
+      const [x,y] = polar(cx,cy,r,theta);
+      const scatter = (Math.random()-0.5)*scatterAmt*(0.3+t);
+      const nx = x + Math.cos(theta+Math.PI/2)*scatter;
+      const ny = y + Math.sin(theta+Math.PI/2)*scatter;
+      const size = Math.max(0.5, 2.3*(1-t)) + Math.random()*0.6;
+      const op = Math.max(0.28, 1-t*0.75);
+      out += `<circle cx="${nx.toFixed(1)}" cy="${ny.toFixed(1)}" r="${size.toFixed(2)}" fill="${color}" opacity="${op.toFixed(2)}"/>`;
+    }
+  }
+  return out;
+}
+
+function starFlare(x,y,uid,scale){
+  scale = scale || 1;
+  const L = 34*scale;
+  return `
+    <g filter="url(#glow${uid})">
+      <line x1="${x-L}" y1="${y}" x2="${x+L}" y2="${y}" stroke="#ffffff" stroke-width="${1.5*scale}" opacity="0.9"/>
+      <line x1="${x}" y1="${y-L}" x2="${x}" y2="${y+L}" stroke="#ffffff" stroke-width="${1.5*scale}" opacity="0.9"/>
+      <line x1="${x-L*0.65}" y1="${y-L*0.65}" x2="${x+L*0.65}" y2="${y+L*0.65}" stroke="#ffffff" stroke-width="${0.9*scale}" opacity="0.55"/>
+      <line x1="${x-L*0.65}" y1="${y+L*0.65}" x2="${x+L*0.65}" y2="${y-L*0.65}" stroke="#ffffff" stroke-width="${0.9*scale}" opacity="0.55"/>
+      <circle cx="${x}" cy="${y}" r="${11*scale}" fill="#ffffff" opacity="0.9"/>
+      <circle cx="${x}" cy="${y}" r="${6*scale}" fill="#ffffff"/>
+    </g>
+  `;
+}
+
+function buildGalaxySVG(g, uid){
+  const cx=100, cy=100;
+  let inner = `
+    <defs>
+      <radialGradient id="core${uid}" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#ffffff"/>
+        <stop offset="30%" stop-color="#ffffff"/>
+        <stop offset="55%" stop-color="${g.core}"/>
+        <stop offset="100%" stop-color="${g.core}" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="halo${uid}" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="${g.arm}" stop-opacity="0.4"/>
+        <stop offset="100%" stop-color="${g.arm}" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="glow${uid}" x="-80%" y="-80%" width="260%" height="260%">
+        <feGaussianBlur stdDeviation="2.4" result="b"/>
+        <feMerge>
+          <feMergeNode in="b"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+    <circle cx="${cx}" cy="${cy}" r="95" fill="url(#halo${uid})"/>
+  `;
+
+  if(g.type === 'barredSpiral' || g.type === 'spiral' || g.type === 'grandDesign'){
+    const arms = g.type === 'grandDesign' ? 2 : (g.type === 'barredSpiral' ? 2 : 3);
+    const turns = g.type === 'grandDesign' ? 1.15 : 1.5;
+    inner += spiralDots(cx,cy,14,88,arms,turns,g.arm,70,10);
+    inner += spiralDots(cx,cy,20,86,arms,turns,g.accent,22,14);
+    if(g.type === 'barredSpiral'){
+      inner += `<rect x="${cx-26}" y="${cy-5}" width="52" height="10" rx="5" fill="url(#core${uid})"/>`;
+    }
+    inner += `<circle cx="${cx}" cy="${cy}" r="20" fill="url(#core${uid})"/>`;
+    inner += starFlare(cx,cy,uid,1);
+  }
+  else if(g.type === 'lenticularEdge'){
+    inner += `<ellipse cx="${cx}" cy="${cy}" rx="88" ry="24" fill="url(#core${uid})"/>`;
+    inner += `<ellipse cx="${cx}" cy="${cy}" rx="88" ry="24" fill="none" stroke="${g.arm}" stroke-opacity="0.5" stroke-width="6"/>`;
+    inner += `<ellipse cx="${cx}" cy="${cy}" rx="88" ry="6" fill="#0a0508" opacity="0.75"/>`;
+    inner += `<circle cx="${cx}" cy="${cy}" r="16" fill="#fffaf0"/>`;
+    inner += starFlare(cx,cy,uid,0.85);
+  }
+  else if(g.type === 'ring'){
+    inner += `<circle cx="${cx}" cy="${cy}" r="60" fill="none" stroke="${g.arm}" stroke-width="18" opacity="0.55"/>`;
+    inner += spiralDots(cx,cy,52,68,1,1,g.accent,90,6);
+    inner += `<circle cx="${cx-8}" cy="${cy+6}" r="14" fill="url(#core${uid})"/>`;
+    inner += starFlare(cx-8,cy+6,uid,0.75);
+  }
+  else if(g.type === 'irregular'){
+    for(let i=0;i<130;i++){
+      const theta = Math.random()*2*Math.PI;
+      const lump = 40 + 30*Math.sin(theta*3+g.id) + 20*Math.random();
+      const r = lump*Math.random();
+      const [x,y] = polar(cx,cy,r,theta);
+      const size = 0.6+Math.random()*2.4;
+      const col = Math.random()>0.5 ? g.arm : g.accent;
+      inner += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${size.toFixed(2)}" fill="${col}" opacity="${(0.4+Math.random()*0.5).toFixed(2)}"/>`;
+    }
+    inner += `<circle cx="${cx}" cy="${cy}" r="14" fill="url(#core${uid})"/>`;
+    inner += starFlare(cx,cy,uid,0.7);
+  }
+
+  return `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
+}
+
+/* ============================================================
+   PASSWORD SCREEN
+   ============================================================ */
+const passInput = document.getElementById('password-input');
+const unlockBtn = document.getElementById('unlock-btn');
+const lockMsg = document.getElementById('lock-msg');
+const lockCard = document.querySelector('.lock-card');
+const song = document.getElementById('bg-song');
+
+function tryUnlock(){
+  const val = passInput.value.trim().toLowerCase();
+  if(val === PASSWORD){
+    lockMsg.textContent = "welcome, my love ❤️";
+    song.volume = 0.55;
+    try{
+      const playPromise = song.play();
+      if(playPromise && typeof playPromise.catch === 'function'){
+        playPromise.catch(()=>{});
+      }
+    } catch(e){ /* never let audio issues block the site from opening */ }
+    setTimeout(()=>{ showScreen('screen-hub'); startHearts('hub-hearts'); }, 700);
+  } else {
+    lockMsg.textContent = "not quite... try again 🌸";
+    lockCard.classList.remove('shake');
+    void lockCard.offsetWidth;
+    lockCard.classList.add('shake');
+  }
+}
+unlockBtn.addEventListener('click', tryUnlock);
+passInput.addEventListener('keydown', e=>{ if(e.key === 'Enter') tryUnlock(); });
+
+/* ============================================================
+   SCREEN SWITCHING
+   ============================================================ */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+/* ============================================================
+   FALLING HEARTS
+   ============================================================ */
+const heartChars = ['❤','💗','💕','💖','💘','💞','🩷','😍','💑','👩‍❤️‍👨','💏','😘','🎂','🍰'];
+function startHearts(layerId, count=26){
+  const layer = document.getElementById(layerId);
+  if(!layer || layer.dataset.started) return;
+  layer.dataset.started = "1";
+  for(let i=0;i<count;i++){
+    const h = document.createElement('span');
+    h.className = 'heart-p';
+    h.textContent = heartChars[Math.floor(Math.random()*heartChars.length)];
+    h.style.left = (Math.random()*100)+'%';
+    h.style.setProperty('--drift', (Math.random()*60-30)+'px');
+    const dur = 6 + Math.random()*6;
+    h.style.animationDuration = dur+'s';
+    h.style.animationDelay = (Math.random()*dur)+'s';
+    h.style.fontSize = (1.5 + Math.random()*1.6)+'vw';
+    layer.appendChild(h);
+  }
+}
+startHearts('lock-hearts');
+
+/* ============================================================
+   HUB — orbiting real galaxies, sequential unlock
+   ============================================================ */
+const orbitField = document.getElementById('orbit-field');
+let unlockedUpTo = 1;       // galaxy ids <= this are open
+let currentGalaxyId = null;
+const nodeRefs = {};        // id -> {wrap, node}
+
+function buildHub(){
+  GALAXIES.forEach((g, i)=>{
+    const angle = ((360/GALAXIES.length)*i - 90) * Math.PI/180;
+    const radiusPct = 34 + (i%2===0 ? 0 : 3);
+    const x = 50 + radiusPct*Math.cos(angle);
+    const y = 50 + radiusPct*Math.sin(angle)*0.62; // ellipse fit for 16:9 stage
+
+    const node = document.createElement('div');
+    node.className = 'galaxy-node';
+    node.style.left = x+'%';
+    node.style.top = y+'%';
+
+    const wrap = document.createElement('div');
+    wrap.className = 'galaxy-icon-wrap';
+    wrap.innerHTML = buildGalaxySVG(g, 'hub'+g.id) + `<span class="lock-icon">🔒</span>`;
+
+    const label = document.createElement('div');
+    label.className = 'galaxy-label';
+    label.textContent = g.name;
+
+    node.appendChild(wrap);
+    node.appendChild(label);
+    node.addEventListener('click', ()=> attemptOpenGalaxy(g.id));
+
+    orbitField.appendChild(node);
+
+    nodeRefs[g.id] = {wrap, label};
+  });
+  refreshHubLockStates();
+}
+
+function refreshHubLockStates(){
+  GALAXIES.forEach(g=>{
+    const ref = nodeRefs[g.id];
+    if(!ref) return;
+    if(g.id <= unlockedUpTo){
+      ref.wrap.classList.remove('locked');
+      ref.wrap.classList.add('unlocked');
+    } else {
+      ref.wrap.classList.add('locked');
+      ref.wrap.classList.remove('unlocked');
+    }
+  });
+}
+
+function attemptOpenGalaxy(id){
+  if(id > unlockedUpTo){
+    const ref = nodeRefs[id];
+    if(ref){
+      ref.wrap.style.animation = 'none';
+      void ref.wrap.offsetWidth;
+      ref.wrap.style.animation = '';
+      ref.label.classList.add('shake');
+      setTimeout(()=>ref.label.classList.remove('shake'), 450);
+    }
+    return;
+  }
+  openGalaxy(id);
+}
+buildHub();
+
+document.getElementById('center-heart').addEventListener('click', openFinal);
+
+/* ============================================================
+   GALAXY DETAIL PAGE — bigger tiles that swap places
+   ============================================================ */
+const galaxyMedia = document.getElementById('galaxy-media');
+const galaxyText = document.getElementById('galaxy-text');
+const galaxyPageTitle = document.getElementById('galaxy-page-title');
+let swapTimer = null;
+let tileObjs = [];
+let typeTimer = null;
+
+function typeText(el, fullText, speed=32){
+  if(typeTimer){ clearInterval(typeTimer); typeTimer = null; }
+  el.textContent = '';
+  const caret = document.createElement('span');
+  caret.className = 'type-caret';
+  el.appendChild(caret);
+  let i = 0;
+  typeTimer = setInterval(()=>{
+    if(i >= fullText.length){
+      clearInterval(typeTimer);
+      typeTimer = null;
+      caret.remove();
+      return;
+    }
+    caret.insertAdjacentText('beforebegin', fullText[i]);
+    i++;
+  }, speed);
+}
+
+function stopSwapping(){
+  if(swapTimer){ clearInterval(swapTimer); swapTimer = null; }
+  tileObjs = [];
+}
+
+function openGalaxy(id){
+  const g = GALAXIES.find(x=>x.id===id);
+  if(!g) return;
+  currentGalaxyId = id;
+  galaxyMedia.innerHTML = '';
+  stopSwapping();
+
+  const items = [];
+  for(let p=1;p<=g.photos;p++) items.push({type:'photo', src:`nirisha/${g.folder}/photo${p}.jpg`});
+  for(let v=1;v<=g.videos;v++) items.push({type:'video', src:`nirisha/${g.folder}/video${v}.mp4`});
+
+  // (background collage removed per request — galaxy pages now use
+  // the plain white/pink marble background instead of a photo tile grid)
+
+  // fixed layout: 3 tiles along the top, 1 on the left, 1 on the right,
+  // 3 tiles along the bottom — every galaxy has exactly 8 items, which
+  // fits this layout perfectly. Falls back to an even grid otherwise.
+  const FIXED_SLOTS = [
+    {left:20, top:13}, {left:50, top:13}, {left:80, top:13},
+    {left:11, top:50},
+    {left:89, top:50},
+    {left:20, top:87}, {left:50, top:87}, {left:80, top:87}
+  ];
+  let positions;
+  let tileVw;
+  if(items.length === FIXED_SLOTS.length){
+    positions = FIXED_SLOTS;
+    tileVw = 18.5;
+  } else {
+    const cols = Math.max(2, Math.ceil(Math.sqrt(items.length)));
+    const rows = Math.ceil(items.length/cols);
+    const cellW = 100/cols;
+    const cellH = 100/rows;
+    tileVw = Math.min(17, Math.max(10, 92/cols));
+    positions = items.map((_, idx)=>{
+      const col = idx % cols;
+      const row = Math.floor(idx/cols);
+      return {left: col*cellW + cellW/2, top: row*cellH + cellH/2};
+    });
+  }
+
+  items.forEach((item, idx)=>{
+    const baseLeft = positions[idx].left;
+    const baseTop = positions[idx].top;
+
+    const tile = document.createElement('div');
+    tile.className = 'tile';
+    tile.style.width = tileVw+'vw';
+    tile.style.height = tileVw+'vw';
+    // start collapsed at the center, then fly outward to its spot
+    tile.style.left = '50%';
+    tile.style.top = '50%';
+    tile.style.opacity = '0';
+    tile.style.transform = 'translate(-50%,-50%) scale(0.15)';
+    tile.style.transition = 'none';
+
+    if(item.type === 'photo'){
+      const img = document.createElement('img');
+      img.src = item.src;
+      img.alt = 'memory';
+      img.onerror = function(){ tile.style.background = `linear-gradient(135deg, ${g.arm}, ${g.core})`; this.remove(); };
+      tile.appendChild(img);
+    } else {
+      const vid = document.createElement('video');
+      vid.src = item.src;
+      vid.autoplay = true; vid.loop = true; vid.muted = true; vid.playsInline = true;
+      vid.onerror = function(){ tile.style.background = `linear-gradient(135deg, ${g.arm}, ${g.core})`; };
+      tile.appendChild(vid);
+    }
+
+    galaxyMedia.appendChild(tile);
+    tileObjs.push({el:tile, left:baseLeft, top:baseTop});
+
+    // trigger the "coming from the middle" entrance, staggered per tile
+    setTimeout(()=>{
+      tile.style.transition = 'left 1.4s cubic-bezier(.22,1,.36,1), top 1.4s cubic-bezier(.22,1,.36,1), opacity 1s ease, transform 1.4s cubic-bezier(.22,1,.36,1)';
+      tile.style.left = baseLeft+'%';
+      tile.style.top = baseTop+'%';
+      tile.style.opacity = '1';
+      tile.style.transform = 'translate(-50%,-50%) scale(1)';
+      // after arriving, swaps use a plain position transition (no scale)
+      setTimeout(()=>{
+        tile.style.transition = 'left 7s ease-in-out, top 7s ease-in-out';
+      }, 1450);
+    }, 120*idx + 60);
+
+  });
+
+  // periodically glide two tiles to swap positions with each other
+  // (only tiles not already mid-glide are chosen, and the interval is
+  // longer than the glide itself, so nothing ever jumps/teleports)
+  if(tileObjs.length > 1){
+    tileObjs.forEach(t=> t.moving = false);
+    swapTimer = setInterval(()=>{
+      const free = tileObjs.filter(t=>!t.moving);
+      if(free.length < 2) return;
+      const i = Math.floor(Math.random()*free.length);
+      let j = Math.floor(Math.random()*free.length);
+      if(j===i) j = (j+1) % free.length;
+      const a = free[i], b = free[j];
+      a.moving = true; b.moving = true;
+      const tmpL = a.left, tmpT = a.top;
+      a.left = b.left; a.top = b.top;
+      b.left = tmpL; b.top = tmpT;
+      a.el.style.left = a.left+'%'; a.el.style.top = a.top+'%';
+      b.el.style.left = b.left+'%'; b.el.style.top = b.top+'%';
+      setTimeout(()=>{ a.moving = false; b.moving = false; }, 7100);
+    }, 8500);
+  }
+
+  typeText(galaxyText, g.text + ' ❤️');
+  galaxyPageTitle.textContent = g.name;
+  showScreen('screen-galaxy');
+  startHearts('galaxy-hearts');
+}
+
+document.getElementById('galaxy-back').addEventListener('click', ()=>{
+  stopSwapping();
+  if(typeTimer){ clearInterval(typeTimer); typeTimer = null; }
+  if(currentGalaxyId === unlockedUpTo && unlockedUpTo < GALAXIES.length){
+    unlockedUpTo += 1;
+    refreshHubLockStates();
+  }
+  currentGalaxyId = null;
+  showScreen('screen-hub');
+});
+
+/* ============================================================
+   FINAL PAGE
+   ============================================================ */
+/* ============================================================
+   SHARED: fill a container with a full-screen grid of true 1:1
+   square tiles (photos + videos), cycling the given media list
+   until every cell is filled.
+   ============================================================ */
+function fillSquareCollage(container, mediaItems){
+  container.innerHTML = '';
+  const shuffled = mediaItems.slice();
+  for(let i=shuffled.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [shuffled[i],shuffled[j]] = [shuffled[j],shuffled[i]];
+  }
+  const minCells = shuffled.length || 1;
+  // solve cols/rows so each cell is a true square on a 16:9 stage:
+  // cols/rows = 16/9  and  cols*rows >= minCells
+  let cols = Math.max(1, Math.ceil(Math.sqrt(minCells * (16/9))));
+  let rows = Math.max(1, Math.ceil(cols * 9/16));
+  while(cols*rows < minCells){ rows++; }
+  container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  container.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+
+  const total = cols*rows;
+  for(let i=0;i<total;i++){
+    const item = shuffled.length ? shuffled[i % shuffled.length] : null;
+    let cell;
+    if(item && item.type === 'video'){
+      cell = document.createElement('video');
+      cell.src = item.src;
+      cell.autoplay = true; cell.loop = true; cell.muted = true; cell.playsInline = true;
+      cell.onerror = function(){ this.style.background = 'linear-gradient(135deg,#f3c6d6,#c96a92)'; };
+    } else {
+      cell = document.createElement('div');
+      if(item){
+        cell.style.backgroundImage = `url('${item.src}')`;
+        const probe = new Image();
+        probe.onerror = ()=>{ cell.style.backgroundImage = 'none'; cell.style.background = 'linear-gradient(135deg,#f3c6d6,#c96a92)'; };
+        probe.src = item.src;
+      }
+    }
+    cell.className = 'collage-cell';
+    cell.style.animationDelay = (Math.random()*8)+'s';
+    container.appendChild(cell);
+  }
+}
+
+function allGalaxyMedia(){
+  const list = [];
+  GALAXIES.forEach(g=>{
+    for(let p=1;p<=g.photos;p++) list.push({type:'photo', src:`nirisha/${g.folder}/photo${p}.jpg`});
+    for(let v=1;v<=g.videos;v++) list.push({type:'video', src:`nirisha/${g.folder}/video${v}.mp4`});
+  });
+  return list;
+}
+
+const collageGrid = document.getElementById('collage-grid');
+function buildCollage(){
+  fillSquareCollage(collageGrid, allGalaxyMedia());
+}
+buildCollage();
+
+
+
+function openFinal(){
+  showScreen('screen-final');
+  startHearts('final-hearts');
+}
+document.getElementById('final-back').addEventListener('click', ()=> showScreen('screen-hub'));
+
+const giftBox = document.getElementById('gift-box');
+const giftModal = document.getElementById('gift-modal');
+const confettiLayer = document.getElementById('confetti-layer');
+const confettiEmojis = ['🎉','💖','✨','🎊','💕','❤️','🌟','💗'];
+
+function fireConfetti(){
+  confettiLayer.innerHTML = '';
+  const count = 36;
+  for(let i=0;i<count;i++){
+    const p = document.createElement('span');
+    p.className = 'confetti-piece';
+    p.textContent = confettiEmojis[Math.floor(Math.random()*confettiEmojis.length)];
+    const angle = Math.random()*2*Math.PI;
+    const dist = 12 + Math.random()*30; // vw distance
+    p.style.setProperty('--tx', (Math.cos(angle)*dist)+'vw');
+    p.style.setProperty('--ty', (Math.sin(angle)*dist)+'vw');
+    p.style.setProperty('--rot', (Math.random()*720-360)+'deg');
+    p.style.animationDuration = (1.1 + Math.random()*0.9)+'s';
+    p.style.animationDelay = (Math.random()*0.25)+'s';
+    p.style.fontSize = (1 + Math.random()*1.4)+'vw';
+    confettiLayer.appendChild(p);
+  }
+}
+
+giftBox.addEventListener('click', ()=>{
+  giftModal.classList.add('show');
+  fireConfetti();
+});
+document.getElementById('gift-close').addEventListener('click', ()=> giftModal.classList.remove('show'));
+
+</script>
+</body>
+</html>
